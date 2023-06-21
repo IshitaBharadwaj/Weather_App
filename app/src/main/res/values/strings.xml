@@ -1,0 +1,22 @@
+<resources>
+    <string name="app_name">Weather App</string>
+    <string name="temp_19">19°</string>
+    <string name="h_24_l_18">H:24° L:18°</string>
+    <string name="loc_coimbatore">Coimbatore, India</string>
+    <string name="mid_rain">Mid Rain</string>
+    <string name="temp_20">20°</string>
+    <string name="h_21_l_19">H:21° L:-19°</string>
+    <string name="loc_chennai">Chennai, India</string>
+    <string name="fast_wind">Fast Wind</string>
+    <string name="temp_13">13°</string>
+    <string name="h_16_l_8">H:16° L:8°</string>
+    <string name="loc_tokyo">Tokyo, Japan</string>
+    <string name="showers">Showers</string>
+    <string name="placeholder_search">Search</string>
+    <string name="header">Weather</string>
+    <string name="settings">Settings</string>
+
+
+
+
+</resources>
