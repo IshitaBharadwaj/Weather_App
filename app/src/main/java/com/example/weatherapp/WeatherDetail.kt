@@ -1,6 +1,7 @@
 package com.example.weatherapp
 
 import androidx.compose.foundation.Image
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
@@ -13,6 +14,7 @@ import androidx.compose.foundation.layout.paddingFromBaseline
 import androidx.compose.foundation.layout.width
 import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.snapshots.SnapshotStateList
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.paint
@@ -23,12 +25,17 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.navigation.NavController
 import com.example.weatherapp.R
 
 @Composable
-fun DetailsPage(modifier: Modifier = Modifier) {
+fun DetailsPage(navController: NavController, index:Int?, enteries: SnapshotStateList<Data>,modifier: Modifier = Modifier) {
+    val entry: Data = index?.let { enteries.getOrNull(it) } ?: enteries[0]
     Box(
-        modifier = modifier,
+//        modifier = modifier,
+        modifier = Modifier.clickable {
+            navController.navigateUp()
+        },
         contentAlignment = Alignment.TopCenter
     ) {
         Image(
@@ -42,25 +49,25 @@ fun DetailsPage(modifier: Modifier = Modifier) {
             modifier = modifier.padding(top = 40.dp)
             ){
             Text(
-                text = "Coimbatore",
+                text = "${entry.city}",
                 fontWeight = FontWeight.W400,
                 fontSize = 35.sp,
                 color = Color.White,
             )
             Text(
-                text = "19°",
+                text = "${entry.temp}°",
                 fontWeight = FontWeight.W200,
                 fontSize = 88.sp,
                 color = Color.White,
             )
             Text(
-                text = "Mostly Clear",
+                text = "${entry.weather}",
                 fontWeight = FontWeight.W600,
                 fontSize = 20.sp,
                 color = Color.Gray,
             )
             Text(
-                text = "H:24° L:18°",
+                text = "H:${entry.high}° L:${entry.low}°",
                 fontWeight = FontWeight.W600,
                 fontSize = 20.sp,
                 color = Color.White,
@@ -75,8 +82,8 @@ fun DetailsPage(modifier: Modifier = Modifier) {
     }
 }
 
-@Preview()
-@Composable
-fun PreviewDetailsPage(){
-    DetailsPage()
-}
+//@Preview()
+//@Composable
+//fun PreviewDetailsPage(){
+//    DetailsPage()
+//}

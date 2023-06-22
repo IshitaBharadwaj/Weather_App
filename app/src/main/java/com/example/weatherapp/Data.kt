@@ -13,15 +13,15 @@ open class Data (
     @DrawableRes val drawable : Int,
 
     )
-val enteries = listOf<Data>(
-    Data(19,24,18,"Coimbatore","India","Mid Rain", getDrawable("Mid Rain")),
-    Data(20,21,-19,"Chennai","India","Fast Wind", getDrawable("Fast Wind")),
-    Data(13,16,8,"Tokyo","Japan","Showers", getDrawable("Showers")),
-    Data(25,30,20,"New York","US","Tornado", getDrawable("Tornado")),
-    Data(20,22,18,"London","UK","Mid Rain", getDrawable("Mid Rain")),
-    Data(23,27,19,"Paris","France","Fast Wind", getDrawable("Fast Wind")),
-
-)
+//val enteries = listOf<Data>(
+//    Data(19,24,18,"Coimbatore","India","Mid Rain", getDrawable("Mid Rain")),
+//    Data(20,21,-19,"Chennai","India","Fast Wind", getDrawable("Fast Wind")),
+//    Data(13,16,8,"Tokyo","Japan","Showers", getDrawable("Showers")),
+//    Data(25,30,20,"New York","US","Tornado", getDrawable("Tornado")),
+//    Data(20,22,18,"London","UK","Mid Rain", getDrawable("Mid Rain")),
+//    Data(23,27,19,"Paris","France","Fast Wind", getDrawable("Fast Wind")),
+//
+//    )
 
 fun getDrawable(weather: String):Int{
     val drawable = when(weather){

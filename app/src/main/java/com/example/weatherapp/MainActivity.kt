@@ -4,8 +4,11 @@ import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.annotation.DrawableRes
+import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
+import androidx.compose.foundation.combinedClickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.BoxWithConstraints
@@ -21,12 +24,18 @@ import androidx.compose.foundation.layout.paddingFromBaseline
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.MaterialTheme
 import androidx.compose.material.Surface
 import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.CompositionLocalProvider
+import androidx.compose.runtime.SideEffect
+import androidx.compose.runtime.mutableStateListOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.snapshots.SnapshotStateList
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.geometry.Offset
@@ -39,28 +48,87 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.navigation.NavHostController
+import androidx.navigation.compose.NavHost
+import androidx.navigation.compose.composable
+import androidx.navigation.compose.rememberNavController
+import androidx.compose.ui.unit.IntOffset
+import androidx.navigation.NavType
+import androidx.navigation.navArgument
+import androidx.navigation.NavController
+import androidx.navigation.NavGraphBuilder
+import androidx.navigation.compose.NavHost
+import androidx.navigation.compose.composable
+import androidx.navigation.compose.rememberNavController
+import com.example.weatherapp.ui.theme.grey
 
 //import com.example.weatherapp.ui.theme.LightGrey
 //import com.example.weatherapp.ui.theme.WeatherAppTheme
+
+sealed class Screen(val route: String) {
+    object Home : Screen("home")
+    object Details : Screen("details")
+}
 
 
 class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContent {
-//            WeatherAppTheme {
-                // A surface container using the 'background' color from the theme
-                Surface(
-                    modifier = Modifier.fillMaxSize(),
-                    color = MaterialTheme.colors.background
-                ) {
-                    DetailsPage()
-                }
-//            }
+            Surface(
+                modifier = Modifier.fillMaxSize(),
+                color = MaterialTheme.colors.background
+            ) {
+                MyApp()
+            }
         }
     }
 }
 
+@Composable
+fun MyApp() {
+
+    var enteries = remember {
+        mutableStateListOf<Data>(
+            Data(19,24,18,"Coimbatore","India","Mid Rain", getDrawable("Mid Rain")),
+            Data(20,21,-19,"Chennai","India","Fast Wind", getDrawable("Fast Wind")),
+            Data(13,16,8,"Tokyo","Japan","Showers", getDrawable("Showers")),
+            Data(25,30,20,"New York","US","Tornado", getDrawable("Tornado")),
+            Data(20,22,18,"London","UK","Mid Rain", getDrawable("Mid Rain")),
+            Data(23,27,19,"Paris","France","Fast Wind", getDrawable("Fast Wind")),
+        )
+    }
+    val navController = rememberNavController()
+
+    NavHost(navController = navController, startDestination = Screen.Home.route) {
+        addHomeScreen(navController, enteries)
+        addDetailsScreen(navController, enteries)
+    }
+}
+
+fun NavGraphBuilder.addHomeScreen(navController: NavController, enteries: SnapshotStateList<Data>) {
+    composable(Screen.Home.route) {
+        HomeScreen(navController = navController, enteries = enteries)
+    }
+}
+
+fun NavGraphBuilder.addDetailsScreen(navController: NavController,enteries: SnapshotStateList<Data> ) {
+    composable(
+        route = "${Screen.Details.route}/{index}",
+        arguments = listOf(
+            navArgument("index") { type = NavType.IntType }
+        )
+    ) { entry ->
+        val index = entry.arguments?.getInt("index")
+        DetailsPage(navController = navController, index = index, enteries = enteries)
+    }
+}
+
+//fun NavGraphBuilder.addDetailsScreen(navController: NavController) {
+//    composable(Screen.Details.route) {
+//        DetailsPage(navController = navController)
+//    }
+//}
 
 @Composable
 fun HomePageCardImage(){
@@ -69,13 +137,16 @@ fun HomePageCardImage(){
         Image(
             painter = painter,
             contentDescription = null,
-//            modifier = Modifier.fillMaxSize()
         )
 }
 
 
+@OptIn(ExperimentalFoundationApi::class)
 @Composable
 fun HomePageCard(
+    index :Int,
+    enteries: SnapshotStateList<Data>,
+    navController: NavController,
     @DrawableRes drawable : Int,
     temp : Int,
     high : Int,
@@ -90,6 +161,17 @@ fun HomePageCard(
         modifier = modifier.height(200.dp)
     ) {
         Box(
+//            modifier = Modifier.clickable {
+//                navController.navigate("${Screen.Details.route}/$index")
+//            },
+            modifier = Modifier.combinedClickable (
+                onClick = {
+                    navController.navigate("${Screen.Details.route}/$index")
+                },
+                onLongClick = {
+                    enteries.removeAt(index)
+                }
+            ),
 
 //        modifier = Modifier
 //            .paint(
@@ -110,7 +192,6 @@ fun HomePageCard(
             )
             Column(
                 verticalArrangement = Arrangement.Top,
-//            horizontalAlignment = Alignment.CenterHorizontally,
                 modifier = Modifier
                     .fillMaxWidth()
                     .padding(horizontal = 20.dp)
@@ -128,7 +209,7 @@ fun HomePageCard(
                     "H:$high° L:$low°\n ",
                     fontWeight = FontWeight.W400,
                     fontSize = 17.sp,
-                    color = MaterialTheme.colors.primary,
+                    color = grey,
                     modifier = Modifier.padding(horizontal = 24.dp)
                 )
                 Text(
@@ -167,6 +248,8 @@ fun HomePageCard(
 
 @Composable
 fun HomePage(
+    navController: NavController,
+    enteries: SnapshotStateList<Data>,
     modifier: Modifier = Modifier
 ) {
     LazyColumn(
@@ -176,8 +259,11 @@ fun HomePage(
 
         ) {
 
-        items(enteries) { item ->
+        itemsIndexed(enteries) { index, item ->
             HomePageCard(
+                index,
+                enteries = enteries,
+                navController = navController,
                 drawable = item.drawable,
                 temp = item.temp,
                 high = item.high,
@@ -192,7 +278,7 @@ fun HomePage(
 
 
 @Composable
-fun HomeScreen(modifier: Modifier = Modifier) {
+fun HomeScreen(navController: NavController,enteries: SnapshotStateList<Data>,modifier: Modifier = Modifier) {
     Column(
         modifier
             .padding(vertical = 16.dp)
@@ -209,22 +295,22 @@ fun HomeScreen(modifier: Modifier = Modifier) {
         Header()
         SearchBar(Modifier.padding(horizontal = 16.dp))
         Spacer(Modifier.height(12.dp))
-        HomePage()
+        HomePage(navController, enteries)
         Spacer(Modifier.height(16.dp))
     }
 }
 
 
-@Preview()
-@Composable
-fun PreviewHomePage(){
-    HomePage()
-}
-
-@Preview(showBackground = true)
-@Composable
-fun PreviewHomePageCardImage(){
-    HomePageCardImage()
-}
+//@Preview()
+//@Composable
+//fun PreviewHomePage(){
+//    HomePage()
+//}
+//
+//@Preview(showBackground = true)
+//@Composable
+//fun PreviewHomePageCardImage(){
+//    HomePageCardImage()
+//}
 
 
