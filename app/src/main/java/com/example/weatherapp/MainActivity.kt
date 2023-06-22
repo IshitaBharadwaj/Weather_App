@@ -34,7 +34,9 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.runtime.SideEffect
 import androidx.compose.runtime.mutableStateListOf
+import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberUpdatedState
 import androidx.compose.runtime.snapshots.SnapshotStateList
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -88,7 +90,7 @@ class MainActivity : ComponentActivity() {
 @Composable
 fun MyApp() {
 
-    var enteries = remember {
+    val enteries = remember {
         mutableStateListOf<Data>(
             Data(19,24,18,"Coimbatore","India","Mid Rain", getDrawable("Mid Rain")),
             Data(20,21,-19,"Chennai","India","Fast Wind", getDrawable("Fast Wind")),
@@ -98,17 +100,20 @@ fun MyApp() {
             Data(23,27,19,"Paris","France","Fast Wind", getDrawable("Fast Wind")),
         )
     }
+
+//    var enteriesCopy: List<Data> = enteries.map { it.copy() }
+    val enteriesCopy: List<Data> = remember { enteries.map { it.copy() } }
     val navController = rememberNavController()
 
     NavHost(navController = navController, startDestination = Screen.Home.route) {
-        addHomeScreen(navController, enteries)
+        addHomeScreen(navController, enteries,enteriesCopy)
         addDetailsScreen(navController, enteries)
     }
 }
 
-fun NavGraphBuilder.addHomeScreen(navController: NavController, enteries: SnapshotStateList<Data>) {
+fun NavGraphBuilder.addHomeScreen(navController: NavController, enteries: SnapshotStateList<Data>, enteriesCopy: List<Data>) {
     composable(Screen.Home.route) {
-        HomeScreen(navController = navController, enteries = enteries)
+        HomeScreen(navController = navController, enteries = enteries,enteriesCopy = enteriesCopy)
     }
 }
 
@@ -278,7 +283,12 @@ fun HomePage(
 
 
 @Composable
-fun HomeScreen(navController: NavController,enteries: SnapshotStateList<Data>,modifier: Modifier = Modifier) {
+fun HomeScreen(navController: NavController,
+               enteries:  SnapshotStateList<Data>,
+               enteriesCopy: List<Data>,
+               modifier: Modifier = Modifier)
+{
+    var updatedEnteries = mutableStateOf(enteries)
     Column(
         modifier
             .padding(vertical = 16.dp)
@@ -292,7 +302,16 @@ fun HomeScreen(navController: NavController,enteries: SnapshotStateList<Data>,mo
 
     ) {
         Spacer(Modifier.height(16.dp))
-        Header()
+//        Header(enteries, enteriesCopy)
+        Header(
+            enteries = updatedEnteries.value,
+            enteriesCopy = enteriesCopy,
+            onCopyClicked = {
+                if (updatedEnteries.value != enteriesCopy) {
+                    updatedEnteries.value = enteriesCopy as SnapshotStateList<Data>
+                }
+            }
+        )
         SearchBar(Modifier.padding(horizontal = 16.dp))
         Spacer(Modifier.height(12.dp))
         HomePage(navController, enteries)

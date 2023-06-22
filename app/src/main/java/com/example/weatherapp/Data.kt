@@ -12,7 +12,11 @@ open class Data (
     val weather : String,
     @DrawableRes val drawable : Int,
 
-    )
+    ){
+    fun copy(): Data {
+        return Data(temp, high, low, city, country, weather, drawable)
+    }
+}
 //val enteries = listOf<Data>(
 //    Data(19,24,18,"Coimbatore","India","Mid Rain", getDrawable("Mid Rain")),
 //    Data(20,21,-19,"Chennai","India","Fast Wind", getDrawable("Fast Wind")),
