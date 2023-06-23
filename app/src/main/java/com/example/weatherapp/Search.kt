@@ -6,6 +6,7 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Search
 import androidx.compose.material.Icon
@@ -16,6 +17,7 @@ import androidx.compose.material.TextFieldDefaults
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.snapshots.SnapshotStateList
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
@@ -32,6 +34,7 @@ fun SearchBar(
     TextField(
         value = searchQuery ,
         onValueChange = onSearchQueryChange,
+        shape = RoundedCornerShape(12.dp),
         leadingIcon = {
             Icon(
                 imageVector = Icons.Default.Search,
@@ -47,6 +50,7 @@ fun SearchBar(
         modifier = modifier
             .fillMaxWidth()
             .heightIn(min = 48.dp)
+
     )
 }
 
