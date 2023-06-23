@@ -16,7 +16,7 @@ The scope of the project includes the following key components:
 
 ### Main Screen
 
-![weatherApp1](https://github.com/IshitaBharadwaj/Weather_App/assets/68071562/15134060-855b-4fe1-a258-24ec5e0233d3)
+![weatherApp1](https://github.com/IshitaBharadwaj/Weather_App/assets/68071562/15134060-855b-4fe1-a258-24ec5e0233d3){ width: 200px; }
 
 
 ☁️  Multiple cards are shown as a LazyColumn where each card shows temperature (min, max), current temperature, location and image matching weather condition. <br>
@@ -28,7 +28,7 @@ The scope of the project includes the following key components:
 
 ### Detail Screen
 
-![weatherApp2](https://github.com/IshitaBharadwaj/Weather_App/assets/68071562/6fcd86d1-699e-4c4f-8215-c82e8742fca7)
+![weatherApp2](https://github.com/IshitaBharadwaj/Weather_App/assets/68071562/6fcd86d1-699e-4c4f-8215-c82e8742fca7){ width: 200px; }
 
 ☁️ Detail screen opens when user clicks on a card on main screen.<br>
 ☀️ Data is passed from main screen to detail screen.<br>
