@@ -33,7 +33,6 @@ import androidx.compose.runtime.remember
 @Composable
 fun Header(enteries: SnapshotStateList<Data>,
            enteriesCopy: List<Data>,
-           onCopyClicked: () -> Unit,
            modifier: Modifier = Modifier)
 {
     var updateFlag = remember { mutableStateOf(false) }
@@ -67,7 +66,6 @@ fun Header(enteries: SnapshotStateList<Data>,
                 .size(32.dp)
                 .clickable {
                     updateFlag.value = true
-//                        onCopyClicked
                 }
         )
     }

@@ -14,6 +14,7 @@ import androidx.compose.material.Text
 import androidx.compose.material.TextField
 import androidx.compose.material.TextFieldDefaults
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.snapshots.SnapshotStateList
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.graphics.Brush
@@ -21,16 +22,16 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 
-
-
-
 @Composable
 fun SearchBar(
+//    enteries : SnapshotStateList<Data>,
+    searchQuery: String,
+    onSearchQueryChange: (String)->Unit,
     modifier: Modifier = Modifier
 ) {
     TextField(
-        value = "" ,
-        onValueChange = {},
+        value = searchQuery ,
+        onValueChange = onSearchQueryChange,
         leadingIcon = {
             Icon(
                 imageVector = Icons.Default.Search,
@@ -49,27 +50,3 @@ fun SearchBar(
     )
 }
 
-
-//@OptIn(ExperimentalMaterial3Api::class)
-//@Composable
-//fun SearchBar(
-//    modifier: Modifier = Modifier
-//) {
-//    TextField(
-//        value = "" ,
-//        onValueChange = {},
-//        leadingIcon = {
-//            Icon(
-//                imageVector = Icons.Default.Search,
-//                contentDescription = null
-//            )
-//        },
-//        colors = TextFieldDefaults.textFieldColors(backgroundColor = Color.Cyan),
-//        placeholder = {
-//            Text(stringResource(R.string.placeholder_search))
-//        },
-//        modifier = modifier
-//            .fillMaxWidth()
-//            .heightIn(min = 48.dp)
-//    )
-//}

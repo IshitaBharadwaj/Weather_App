@@ -15,6 +15,7 @@ import androidx.compose.foundation.layout.BoxWithConstraints
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
@@ -33,10 +34,12 @@ import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.runtime.SideEffect
+import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateListOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberUpdatedState
+import androidx.compose.runtime.setValue
 import androidx.compose.runtime.snapshots.SnapshotStateList
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -44,6 +47,7 @@ import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.modifier.modifierLocalConsumer
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
@@ -78,7 +82,6 @@ class MainActivity : ComponentActivity() {
         super.onCreate(savedInstanceState)
         setContent {
             Surface(
-                modifier = Modifier.fillMaxSize(),
                 color = MaterialTheme.colors.background
             ) {
                 MyApp()
@@ -129,12 +132,6 @@ fun NavGraphBuilder.addDetailsScreen(navController: NavController,enteries: Snap
     }
 }
 
-//fun NavGraphBuilder.addDetailsScreen(navController: NavController) {
-//    composable(Screen.Details.route) {
-//        DetailsPage(navController = navController)
-//    }
-//}
-
 @Composable
 fun HomePageCardImage(){
         val painter = painterResource(id = R.drawable.rectangle_5)
@@ -166,9 +163,6 @@ fun HomePageCard(
         modifier = modifier.height(200.dp)
     ) {
         Box(
-//            modifier = Modifier.clickable {
-//                navController.navigate("${Screen.Details.route}/$index")
-//            },
             modifier = Modifier.combinedClickable (
                 onClick = {
                     navController.navigate("${Screen.Details.route}/$index")
@@ -177,16 +171,7 @@ fun HomePageCard(
                     enteries.removeAt(index)
                 }
             ),
-
-//        modifier = Modifier
-//            .paint(
-//                painter = painterResource(id = R.drawable.rectangle_5),
-//                contentScale = ContentScale.FillWidth
-//            )
-//            .height(250.dp),
             contentAlignment = Alignment.TopCenter,
-//            modifier = Modifier
-//                .height(maxHeight)
         )
         {
             Image(
@@ -253,10 +238,17 @@ fun HomePageCard(
 
 @Composable
 fun HomePage(
+    searchQuery: String,
     navController: NavController,
     enteries: SnapshotStateList<Data>,
     modifier: Modifier = Modifier
 ) {
+    var filteredEnteries = enteries.filter { entry ->
+        entry.city.contains(searchQuery, ignoreCase = true)||
+                entry.country.contains(searchQuery, ignoreCase = true)||
+                entry.weather.contains(searchQuery, ignoreCase = true)
+    }
+
     LazyColumn(
         modifier = modifier,
         verticalArrangement = Arrangement.spacedBy(8.dp),
@@ -264,7 +256,7 @@ fun HomePage(
 
         ) {
 
-        itemsIndexed(enteries) { index, item ->
+        itemsIndexed(filteredEnteries) { index, item ->
             HomePageCard(
                 index,
                 enteries = enteries,
@@ -275,7 +267,7 @@ fun HomePage(
                 low = item.low,
                 city = item.city,
                 country = item.country,
-                weather = item.weather
+                weather = item.weather,
             )
         }
     }
@@ -289,9 +281,12 @@ fun HomeScreen(navController: NavController,
                modifier: Modifier = Modifier)
 {
     var updatedEnteries = mutableStateOf(enteries)
+    var searchQuery by remember { mutableStateOf("") }
+
     Column(
         modifier
-            .padding(vertical = 16.dp)
+//            .padding(vertical = 16.dp)
+            .fillMaxHeight()
             .background(
                 brush = Brush.linearGradient(
                     colors = listOf(Color(0xFF2E335A), Color(0xFF1C1B33)),
@@ -302,19 +297,21 @@ fun HomeScreen(navController: NavController,
 
     ) {
         Spacer(Modifier.height(16.dp))
-//        Header(enteries, enteriesCopy)
         Header(
             enteries = updatedEnteries.value,
             enteriesCopy = enteriesCopy,
-            onCopyClicked = {
-                if (updatedEnteries.value != enteriesCopy) {
-                    updatedEnteries.value = enteriesCopy as SnapshotStateList<Data>
-                }
-            }
+
         )
-        SearchBar(Modifier.padding(horizontal = 16.dp))
+        SearchBar(
+//            enteries = enteries,
+            searchQuery = searchQuery,
+            onSearchQueryChange = { query ->
+                searchQuery = query
+            },
+            Modifier.padding(horizontal = 16.dp)
+        )
         Spacer(Modifier.height(12.dp))
-        HomePage(navController, enteries)
+        HomePage(searchQuery,navController, enteries)
         Spacer(Modifier.height(16.dp))
     }
 }
