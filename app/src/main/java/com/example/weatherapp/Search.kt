@@ -26,7 +26,6 @@ import androidx.compose.ui.unit.dp
 
 @Composable
 fun SearchBar(
-//    enteries : SnapshotStateList<Data>,
     searchQuery: String,
     onSearchQueryChange: (String)->Unit,
     modifier: Modifier = Modifier

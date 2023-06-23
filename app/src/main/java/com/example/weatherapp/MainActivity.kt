@@ -68,8 +68,6 @@ import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import com.example.weatherapp.ui.theme.grey
 
-//import com.example.weatherapp.ui.theme.LightGrey
-//import com.example.weatherapp.ui.theme.WeatherAppTheme
 
 sealed class Screen(val route: String) {
     object Home : Screen("home")
@@ -104,7 +102,6 @@ fun MyApp() {
         )
     }
 
-//    var enteriesCopy: List<Data> = enteries.map { it.copy() }
     val enteriesCopy: List<Data> = remember { enteries.map { it.copy() } }
     val navController = rememberNavController()
 
